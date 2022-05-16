@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3356:3306"
+    environment:
+      - MYSQL_DATABASE=db_test
+      - MYSQL_USER=dbuser
+      - MYSQL_PASSWORD=dbpassword
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_config_deamond:/etc/mysql/config.d
+      - ./src/main/resources/db/init.sql:/data/application/init.sql
+    command: --init-file /data/application/init.sql
+    networks:
+      - backend
+
+  api-service:
+      container_name: api-service
+      build:
+        context: ./
+        dockerfile: Dockerfile
+      environment:
+        - DB_URL=mysql
+        - DB_NAME=db_test
+        - DB_USER=dbuser
+        - DB_PASSWORD=dbpassword
+      ports:
+        - "8080:8080"
+      depends_on:
+        - mysql
+      volumes:
+        - ./:/app
+      networks:
+        - backend
+
+  prometheus:
+    image: "prom/prometheus"
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - backend
+
+  grafana:
+    image: "grafana/grafana"
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: api-network
+volumes:
+  mysql_data:
+  mysql_config_deamond:
