@@ -27,7 +27,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\":\"manager\",\r\n    \"password\":\"password\"\r\n}",
+					"raw": "{\r\n    \"username\":\"sysadmin\",\r\n    \"password\":\"password\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -294,12 +294,14 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{ACTUATOR}}/actuator",
+					"raw": "http://{{API-GATEWAY}}/api/v1/actuator",
 					"protocol": "http",
 					"host": [
-						"{{ACTUATOR}}"
+						"{{API-GATEWAY}}"
 					],
 					"path": [
+						"api",
+						"v1",
 						"actuator"
 					]
 				}
