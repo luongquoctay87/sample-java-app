@@ -1,6 +1,6 @@
 # SAMPLE JAVA APPLICATION
 ### 1. Tech stack
-- java 8
+- Java 8
 - Spring boot 2.6.4
 - Spring boot security
 - Spring boot jwt
@@ -55,9 +55,9 @@ Connect port 5005
 - Grafana web UI: [Grafana](http://localhost:3000)
   - default account: admin/admin
     
- 
 
-###3 Push Images to Docker Hub (Reverse to deploy on EC2)
+
+### 3 Push Images to Docker Hub (Reverse to deploy on EC2)
 **3.1 On Local**
 - Create docker tag
 ```
@@ -143,3 +143,97 @@ scrape_configs:
       - targets:
           - 54.151.224.116:8080
 ```
+
+### 4. Set up Jenkins on EC2
+[Jenkins Set up Guideline](https://www.section.io/engineering-education/building-a-java-application-with-jenkins-in-docker/)
+
+4.1 Create `Dockerfile`
+```
+FROM jenkins/jenkins:lts
+USER root
+RUN apt-get update -qq \
+	&& apt-get install -qqy apt-transport-https ca-certificates curl gnupg2 software-properties-common
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+RUN add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   $(lsb_release -cs) \
+   stable"
+RUN apt-get update  -qq \
+	&& apt-get install docker-ce -y
+RUN usermod -aG docker jenkins
+```
+
+4.2 Build image
+```
+$ service docker start
+$ service docker status
+$ systemctl enable docker
+$ docker image build -t jenkins-docker .
+```
+
+4.3 Run docker image
+```
+docker run -d -it -p 8081:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped jenkins-docker
+```
+
+4.4 Set up jenkins
+
+Access [Jenkins Server](http://localhost:8081) 
+```
+  $ docker exec -it <container_name/container_id> /bin/bash
+  $ cat /var/jenkins_home/secrets/initialAdminPassword
+  -> copy/paste to jenkins
+
+  1. Jenkins global configurations
+      System Configurations
+          Global Tool Configuration
+              - 
+              - JDK
+                  Lấy path jav_home trong container
+                      $ docker exec -it <container_name/container_id> /bin/bash
+                      $echo $JAVA_HOME
+                  + name: JDK
+                  + JAVA_HOME: /opt/java/openjdk
+              - Maven config
+                  + name: maven-3.8.5
+                  + install automatically: install from apache
+              
+  2. Jenkins item
+      + name: sample-java-app
+      + freestyle project
+  
+  3. Git
+      Github project: https://github.com/luongquoctay87/sample-java-app
+      Git: https://github.com/luongquoctay87/sample-java-app.git
+      Credential: luongquoctay87/Hoilamj!123
+      
+  4. Build trigger
+      Schedule: * * * * *
+      
+  5. Build Environment
+      Invoke top-level Maven targets
+          Maven version: 3.8.5
+          Goals: test
+      Invoke top-level Maven targets
+          Maven version: 3.8.5
+          Goals: install
+          
+  6. Build now
+  
+  7. Building and deploying our Docker image to Docker Hub
+    7.1 Install plugin
+    In Manage Jenkins, select Manage Plugins under System Configurations, search and install the following plugins:
+      - docker-build-step
+      - CloudBees Docker Build and Publish
+    7.2 Add Build Step
+      -> Docker Build
+        -> Docker Build and Publish
+          + Repository name: luongquoctay87/sample-java-app
+          + tag: v1.0.0
+     7.3 Login to our Docker Hub account inside our Jenkins container
+      $ docker exec -it <container_name/container_id> /bin/bash
+      $ docker login
+     7.4 Rebuild
+      Click: Build now
+     
+``` 

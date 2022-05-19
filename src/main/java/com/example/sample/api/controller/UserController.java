@@ -64,7 +64,7 @@ public class UserController {
         return new ApiResponse(HttpStatus.OK.value(), "user", user);
     }
 
-    @PreAuthorize("hasAnyAuthority('SYSTEM_ADMIN', 'ROLE_MANAGER')")
+    // @PreAuthorize("hasAnyAuthority('SYSTEM_ADMIN', 'ROLE_MANAGER')")
     @PostMapping
     public ApiResponse createUser(@RequestBody UserForm form) {
         LOG.info("Request api POST api/v1/users");
@@ -126,7 +126,7 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
+    // @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
     @DeleteMapping("/{id}")
     public ApiResponse deleteUser(@PathVariable(value = "id") Long _id) {
         LOG.info(String.format("Request api DELETE api/v1/users/%s", _id));
