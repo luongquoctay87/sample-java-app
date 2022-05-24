@@ -199,16 +199,17 @@ Access [Jenkins Server](http://localhost:8081)
                   + install automatically: install from apache
               
   2. Jenkins item
-      + name: sample-java-app
-      + freestyle project
+      + Name: sample-java-app
+      + Freestyle project
   
   3. Git
       Github project: https://github.com/luongquoctay87/sample-java-app
       Git: https://github.com/luongquoctay87/sample-java-app.git
-      Credential: luongquoctay87/Hoilamj!123
+      Credential: luongquoctay87/xxxxxxx
       
   4. Build trigger
-      Schedule: * * * * *
+      Poll SCM
+        Schedule: * * * * *
       
   5. Build Environment
       Invoke top-level Maven targets
@@ -229,8 +230,10 @@ Access [Jenkins Server](http://localhost:8081)
       -> Docker Build
         -> Docker Build and Publish
           + Repository name: luongquoctay87/sample-java-app
-          + tag: v1.0.0
+          + Tag: v1.0.0
      7.3 Login to our Docker Hub account inside our Jenkins container
+      
+      or
       $ docker exec -it <container_name/container_id> /bin/bash
       $ docker login
      7.4 Rebuild
