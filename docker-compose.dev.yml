@@ -4,14 +4,12 @@ services:
   api-service:
     image: luongquoctay87/sample-java-app:v1.0.0
     container_name: api-service
-#    environment:
-#      - MYSQL_URL=${MYSQL_URL}
-#      - MYSQL_PORT=${MYSQL_PORT}
-#      - MYSQL_DATABASE=${MYSQL_DATABASE}
-#      - MYSQL_USER=${MYSQL_USER}
-#      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-    env_file:
-      - ./.evn
+    environment:
+      - DB_URL=${POSTGRES_URL}
+      - DB_PORT=${POSTGRES_PORT}
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "8080:8080"
     networks:

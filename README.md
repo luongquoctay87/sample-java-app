@@ -93,11 +93,11 @@ $ docker-compose -v
 
 $ vi ~/.bash_profile
   ```
-  export MYSQL_URL=database-1.ctixzu74yr0p.ap-southeast-1.rds.amazonaws.com
-  export MYSQL_PORT=3306
-  export MYSQL_DATABASE=db_test
-  export MYSQL_USER=admin
-  export MYSQL_PASSWORD=12345678
+  export POSTGRES_URL=database-1.ctixzu74yr0p.ap-southeast-1.rds.amazonaws.com
+  export POSTGRES_PORT=5432
+  export POSTGRES_DB=db_test
+  export POSTGRES_USER=admin
+  export POSTGRES_PASSWORD=12345678
   ```
 $ source ~/.bash_profile
 

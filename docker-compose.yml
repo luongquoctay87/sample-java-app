@@ -1,38 +1,41 @@
 version: '3.9'
 
 services:
-  mysql:
-    container_name: mysql
-    image: mysql:5.7
-    restart: always
-    ports:
-      - "3356:3306"
-    env_file:
-      - ./local.evn
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      PGDATA: /data/postgres
     volumes:
-      - mysql_data:/var/lib/mysql
-      - mysql_config_deamond:/etc/mysql/config.d
-      - ./src/main/resources/db/init.sql:/data/application/init.sql
-    command: --init-file /data/application/init.sql
+      - postgres:/data/postgres
+      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
     networks:
       - backend
+    restart: unless-stopped
 
   api-service:
-      container_name: api-service
-      build:
-        context: ./
-        dockerfile: Dockerfile
-      env_file:
-        - ./local.evn
-      environment:
-        - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-      ports:
-        - "8080:8080"
-        - "5005:5005"
-      depends_on:
-        - mysql
-      networks:
-        - backend
+    container_name: api-service
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - DB_URL=postgres
+      - DB_PORT=5432
+      - DB_NAME=crm_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    depends_on:
+      - postgres
+    networks:
+      - backend
 
   prometheus:
     image: "prom/prometheus"
@@ -56,5 +59,4 @@ networks:
   backend:
     name: api-network
 volumes:
-  mysql_data:
-  mysql_config_deamond:
+  postgres:
