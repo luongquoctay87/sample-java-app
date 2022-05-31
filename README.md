@@ -21,7 +21,7 @@ $ docker-compose up -d --build
 
 2.2 Test
 ```
-$ curl --location --request POST http://localhost:8080/api/v1/auth/login --header Authorization:Basic b2F1dGgyQ2xpZW50Om9hdXRoMlNlY3JldA== --header Content-Type:application/x-www-form-urlencoded --data-urlencode username=sysadmin --data-urlencode password=password
+$ curl --location --request POST http://localhost:8081/api/v1/auth/login --header Authorization:Basic b2F1dGgyQ2xpZW50Om9hdXRoMlNlY3JldA== --header Content-Type:application/x-www-form-urlencoded --data-urlencode username=sysadmin --data-urlencode password=password
 ```
 
 2.3 View API information by Swagger
@@ -89,23 +89,34 @@ $ ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 $ docker-compose -v
 ```
 
+- Create persisting environment variables
+
+$ vi ~/.bash_profile
+  ```
+  export MYSQL_URL=database-1.ctixzu74yr0p.ap-southeast-1.rds.amazonaws.com
+  export MYSQL_PORT=3306
+  export MYSQL_DATABASE=db_test
+  export MYSQL_USER=admin
+  export MYSQL_PASSWORD=12345678
+  ```
+$ source ~/.bash_profile
+
+
 - Create file `docker-compose.yml`
 ```
 version: '3.8'
 
-services:
   api-service:
       image: luongquoctay87/sample-java-app:v1.0.0
       container_name: api-service
       environment:
-        - DB_URL=database-1.ctixzu74yr0p.ap-southeast-1.rds.amazonaws.com
-        - DB_NAME=db_test
-        - DB_USER=admin
-        - DB_PASSWORD=12345678
+        - MYSQL_URL=${MYSQL_URL}
+        - MYSQL_PORT=${MYSQL_PORT}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       ports:
         - "8080:8080"
-      volumes:
-        - ./:/app
       networks:
         - backend
 

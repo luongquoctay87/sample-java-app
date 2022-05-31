@@ -2,19 +2,20 @@ version: '3.8'
 
 services:
   api-service:
-      image: luongquoctay87/sample-java-app:v1.0.0
-      container_name: api-service
-      environment:
-        - DB_URL=database-1.ctixzu74yr0p.ap-southeast-1.rds.amazonaws.com
-        - DB_NAME=db_test
-        - DB_USER=admin
-        - DB_PASSWORD=12345678
-      ports:
-        - "8080:8080"
-      volumes:
-        - ./:/app
-      networks:
-        - backend
+    image: luongquoctay87/sample-java-app:v1.0.0
+    container_name: api-service
+#    environment:
+#      - MYSQL_URL=${MYSQL_URL}
+#      - MYSQL_PORT=${MYSQL_PORT}
+#      - MYSQL_DATABASE=${MYSQL_DATABASE}
+#      - MYSQL_USER=${MYSQL_USER}
+#      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    env_file:
+      - ./.evn
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
 
   prometheus:
     image: "prom/prometheus"
